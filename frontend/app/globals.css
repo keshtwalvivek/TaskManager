@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+/* 🌿 Root Theme */
+:root {
+  --background: #ffffff;
+
+  --primary: #65a30d;
+  --primary-dark: #4d7c0f;
+
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #d9f99d;
+}
+
+/* ❗ FORCE LIGHT MODE (IMPORTANT FIX) */
+html {
+  color-scheme: light;
+}
+
+/* ❗ OVERRIDE Tailwind base text color issue */
+body {
+  background-color: var(--background);
+  color: #171717 !important; /* 🔥 force dark text */
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Optional */
+.text-default {
+  color: #171717;
+}
