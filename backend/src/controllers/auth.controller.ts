@@ -23,7 +23,7 @@ export const login = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 0 * 60 * 1000, // 15 min
+      maxAge: 15 * 60 * 1000, // 15 min
     });
 
     res.cookie("refreshToken", refreshToken, {
