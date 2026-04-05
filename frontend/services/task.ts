@@ -21,10 +21,26 @@ export const createTask = async (data: TaskPayload) => {
 };
 
 //  Get Tasks (with pagination & filtering)
+// export const getTasks = async (params?: {
+//   page?: number;
+//   limit?: number;
+//   status?: TaskStatus;
+// }) => {
+//   try {
+//     const res = await axiosInstance.get("/tasks", {
+//       params,
+//     });
+//     return res.data;
+//   } catch (error) {
+//     throw new Error(handleApiError(error));
+//   }
+// };
+
 export const getTasks = async (params?: {
   page?: number;
   limit?: number;
   status?: TaskStatus;
+  search?: string;
 }) => {
   try {
     const res = await axiosInstance.get("/tasks", {
@@ -49,7 +65,7 @@ export const getTaskById = async (taskId: string) => {
 //  Update Task
 export const updateTask = async (
   taskId: string,
-  data: Partial<TaskPayload>
+  data: Partial<TaskPayload>,
 ) => {
   try {
     const res = await axiosInstance.put(`/tasks/${taskId}`, data);

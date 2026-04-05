@@ -18,8 +18,16 @@ export const createTask = async (req: any, res: Response) => {
 
 export const getTasks = async (req: any, res: Response) => {
   try {
-    const { page = 1, limit = 10, status } = req.query;
-    const tasks = await getTasksService(req.user.id, Number(page), Number(limit), status as string);
+    const { page = 1, limit = 5, status, search } = req.query;
+
+    const tasks = await getTasksService(
+      req.user.id,
+      Number(page),
+      Number(limit),
+      status as string,
+      search as string,
+    );
+
     res.json(tasks);
   } catch (err: any) {
     res.status(400).json({ message: err.message });

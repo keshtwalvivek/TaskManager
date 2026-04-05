@@ -14,16 +14,29 @@ export const createTaskService = async (data: any, userId: string) => {
   });
 };
 
-// Get Tasks (with pagination and filtering)
+// Get Tasks (with filtering)
 export const getTasksService = async (
   userId: string,
   page: number,
   limit: number,
-  status?: string
+  status?: string,
+  search?: string,
 ) => {
   const where: any = { userId };
+
   if (status && ["pending", "inprogress", "completed"].includes(status)) {
     where.status = status;
+  }
+
+  if (search) {
+    where.OR = [
+      {
+        title: { contains: search, mode: "insensitive" },
+      },
+      {
+        description: { contains: search, mode: "insensitive" },
+      },
+    ];
   }
 
   const tasks = await prisma.task.findMany({
@@ -35,11 +48,21 @@ export const getTasksService = async (
 
   const total = await prisma.task.count({ where });
 
-  return { total, page, limit, tasks };
+  return {
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit), // 🔥 add this
+    tasks,
+  };
 };
 
 // Update Task
-export const updateTaskService = async (id: string, data: any, userId: string) => {
+export const updateTaskService = async (
+  id: string,
+  data: any,
+  userId: string,
+) => {
   const task = await prisma.task.findUnique({ where: { id } });
   if (!task || task.userId !== userId) throw new Error("Unauthorized");
 
@@ -70,7 +93,8 @@ export const toggleTaskStatusService = async (id: string, userId: string) => {
   let newStatus: TaskStatus;
 
   if (task.status === TaskStatus.pending) newStatus = TaskStatus.inprogress;
-  else if (task.status === TaskStatus.inprogress) newStatus = TaskStatus.completed;
+  else if (task.status === TaskStatus.inprogress)
+    newStatus = TaskStatus.completed;
   else newStatus = TaskStatus.pending;
 
   return prisma.task.update({

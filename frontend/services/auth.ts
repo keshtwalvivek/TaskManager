@@ -16,12 +16,18 @@ export const registerUser = async (data: {
 };
 
 // Login
-export const loginUser = async (data: {
-  email: string;
-  password: string;
-}) => {
+export const loginUser = async (data: { email: string; password: string }) => {
   try {
     const res = await axiosInstance.post("/auth/login", data);
+    return res.data;
+  } catch (error) {
+    throw new Error(handleApiError(error));
+  }
+};
+
+export const logoutUser = async () => {
+  try {
+    const res = await axiosInstance.post("/auth/logout");
     return res.data;
   } catch (error) {
     throw new Error(handleApiError(error));

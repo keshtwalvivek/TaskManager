@@ -17,14 +17,12 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        await axios.get("http://localhost:5000/api/auth/refresh", {
-          withCredentials: true,
-        });
+        await axiosInstance.post("/auth/refresh");
 
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         if (typeof window !== "undefined") {
-          window.location.href = "/login";
+          // window.location.href = "/login";
         }
         return Promise.reject(refreshError);
       }
