@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Mail, Lock, User } from "lucide-react";
+import { loginUser, registerUser } from "@/services/auth";
+import { toast } from "react-toastify/unstyled";
 
 type FormData = {
   name?: string;
@@ -22,13 +24,33 @@ export default function AuthPage() {
   } = useForm<FormData>();
 
   const onSubmit = async (data: FormData) => {
-    console.log(data);
+    try {
+      if (isLogin) {
+        const res = await loginUser({
+          email: data.email,
+          password: data.password,
+        });
 
-    // Fake API
-    setTimeout(() => {
-      document.cookie = "token=12345; path=/";
-      router.push("/dashboard");
-    }, 1000);
+        // Store user
+        localStorage.setItem("user", JSON.stringify(res.user));
+
+        toast.success(res.message || "Login successful");
+
+        router.push("/dashboard");
+      } else {
+        await registerUser({
+          name: data.name!,
+          email: data.email,
+          password: data.password,
+        });
+
+        toast.success("Registration successful! Please login.");
+
+        setIsLogin(true);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Something went wrong");
+    }
   };
 
   return (

@@ -1,20 +1,26 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-export const authMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const token = req.headers.authorization?.split(" ")[1];
-
-  if (!token) return res.status(401).json({ message: "Unauthorized" });
-
+export const authMiddleware = (req: any, res: Response, next: NextFunction) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    (req as any).user = decoded;
+    //  get token from cookie
+    const token = req.cookies.accessToken;
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    //  verify token
+    const decoded: any = jwt.verify(
+      token,
+      process.env.JWT_ACCESS_SECRET as string,
+    );
+
+    //  attach user
+    req.user = { id: decoded.id };
+
     next();
-  } catch {
-    res.status(401).json({ message: "Invalid token" });
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
